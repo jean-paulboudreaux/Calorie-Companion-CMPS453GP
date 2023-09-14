@@ -17,6 +17,7 @@ class AccountCreationForm extends Component {
       activity_level: 'Sedentary', // Default value
       successMessage: '',
       errorMessage: '',
+      user_id:'',
     };
   }
 
@@ -32,13 +33,22 @@ class AccountCreationForm extends Component {
       let username = this.state.username
       let password = this.state.password
       // Send a POST request for authentication
-             const response = await axios.post('http://127.0.0.1:8000/create-account/', {
+             const response = await axios.post('http://127.0.0.1:8001/create-account/', {
         username: username,
         password: password,
       });
 
       if (response.status === 200) {
         this.setState({ isAuthenticated: true });
+        axios.get('http://127.0.0.1:8001/'+username+"/")
+            .then( (response)=>{
+              console.log(response.data.user.id)
+              this.setState({user_id:response.data.user.id})
+
+        }).catch((error) => {
+        // Handle any errors that occur during the request
+        console.error('Error fetching data:', error);
+      });
       }
     } catch (error) {
       this.setState({ isAuthenticated: false });
@@ -49,9 +59,13 @@ class AccountCreationForm extends Component {
     event.preventDefault();
 
     try {
+      let user_id = this.state.user_id
+      let user_id_parsed = parseInt(user_id)
+      const url = `http://127.0.0.1:8001/update-user-details/${user_id_parsed}/`;
+
       // Send a POST request to post additional data using the authenticated username
       console.log(this.state)
-      const response = await axios.post('http://127.0.0.1:8000/all-users/', {
+      const response = await axios.put(url, {
         user: this.state.username,
         height_in_cm: this.state.height_in_cm,
         weight_in_kg: this.state.weight_in_kg,

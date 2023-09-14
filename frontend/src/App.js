@@ -5,7 +5,7 @@ import AccountCreationForm from "./AccountCreationForm";
 
 function App() {
   return (
-     <Login/>
+     <AccountCreationForm/>
   )
 
 }
