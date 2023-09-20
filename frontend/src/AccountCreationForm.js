@@ -1,177 +1,188 @@
 //      const response = await axios.post('http://127.0.0.1:8000/create-account/', data);
-import React, { Component } from 'react';
+import React, {Component, useState} from 'react';
 import axios from 'axios';
+import {Link} from "react-router-dom";
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { redirect } from 'react-router-dom';
+import MyAccount from "./MyAccount";
+import Cookies from "js-cookie";
 
-class AccountCreationForm extends Component {
-  constructor(props) {
-    super(props);
 
-    this.state = {
-      username: '',
-      password: '',
-      isAuthenticated: false,
-      height_in_cm: '',
-      weight_in_kg: '',
-      goal_weight_in_kg: '',
-      age: '',
-      activity_level: 'Sedentary', // Default value
-      successMessage: '',
-      errorMessage: '',
-      user_id:'',
-    };
-  }
 
-  handleInputChange = (event) => {
+function AccountCreationForm(props) {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+    isAuthenticated: false,
+    height_in_cm: '',
+    weight_in_kg: '',
+    goal_weight_in_kg: '',
+    age: '',
+    activity_level: 'Sedentary',
+    successMessage: '',
+    errorMessage: '',
+    user_id: '',
+  });
+
+  const handleInputChange = (event) => {
     const { name, value } = event.target;
-    this.setState({ [name]: value });
-  }
+    setFormData({ ...formData, [name]: value });
+  };
 
-  handleLoginSubmit = async (event) => {
+  const handleLoginSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      let username = this.state.username
-      let password = this.state.password
-      // Send a POST request for authentication
-             const response = await axios.post('http://127.0.0.1:8001/create-account/', {
-        username: username,
-        password: password,
+      const { username, password } = formData;
+      console.log('posting username and password...');
+      const response = await axios.post('http://127.0.0.1:8001/create-account/', {
+        username,
+        password,
       });
 
       if (response.status === 200) {
-        this.setState({ isAuthenticated: true });
-        axios.get('http://127.0.0.1:8001/'+username+"/")
-            .then( (response)=>{
-              console.log(response.data.user.id)
-              this.setState({user_id:response.data.user.id})
-
-        }).catch((error) => {
-        // Handle any errors that occur during the request
-        console.error('Error fetching data:', error);
-      });
+        console.log('successful posting...');
+        const username = formData.username;
+        axios
+            .get('http://127.0.0.1:8001/' + username + '/')
+            .then((response) => {
+              console.log('Got user data...');
+              setFormData({
+                ...formData,
+                isAuthenticated: true,
+                user_id: response.data.user.id,
+              });
+            })
+            .catch((error) => {
+              console.error('Error fetching data:', error);
+            });
       }
     } catch (error) {
-      this.setState({ isAuthenticated: false });
-      console.error('Error:', error);    }
-  }
+      setFormData({
+        ...formData,
+        isAuthenticated: false,
+      });
+      console.error('Error:', error);
+    }
+  };
 
-  handleDataSubmit = async (event) => {
+  const handleDataSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      let user_id = this.state.user_id
-      let user_id_parsed = parseInt(user_id)
+      const user_id = formData.user_id;
+      const user_id_parsed = parseInt(user_id);
       const url = `http://127.0.0.1:8001/update-user-details/${user_id_parsed}/`;
 
-      // Send a POST request to post additional data using the authenticated username
-      console.log(this.state)
+      console.log('putting data...');
+      console.log(formData);
+
       const response = await axios.put(url, {
-        user: this.state.username,
-        height_in_cm: this.state.height_in_cm,
-        weight_in_kg: this.state.weight_in_kg,
-        goal_weight_in_kg: this.state.goal_weight_in_kg,
-        age: this.state.age,
-        activity_level: this.state.activity_level,
+        user: formData.username,
+        height_in_cm: formData.height_in_cm,
+        weight_in_kg: formData.weight_in_kg,
+        goal_weight_in_kg: formData.goal_weight_in_kg,
+        age: formData.age,
+        activity_level: formData.activity_level,
       });
 
-      if (response.status === 201) {
-        this.setState({
-          successMessage: 'Data posted successfully!',
-          errorMessage: '',
-        });
+      if (response.status === 200) {
+        console.log('successfully updated data...');
+        props.handleLogin(true)
+        Cookies.set('username', response.data.username, { expires: 0.1 }); // Expires in 1 day
+        navigate('/my-account')
+      } else {
+        // Handle other cases
       }
     } catch (error) {
-      this.setState({
+      setFormData({
+        ...formData,
         successMessage: '',
         errorMessage: 'Error posting data. Please try again.',
       });
     }
-  }
-
-  render() {
+  };
     return (
-      <div>
-        <h2>Authentication and Data Posting</h2>
-        {this.state.isAuthenticated ? (
-          <div>
-            {this.state.successMessage && <p>{this.state.successMessage}</p>}
-            {this.state.errorMessage && <p>{this.state.errorMessage}</p>}
-            <form onSubmit={this.handleDataSubmit}>
-              {/* Add input fields for other attributes (height, weight, goal weight, age, and activity level) */}
-              {/* Similar to the login form, include onChange handlers */}
+        <div>
+          <h2>Authentication and Data Posting</h2>
+          {formData.isAuthenticated ? (
               <div>
-                <label>Height (cm):</label>
-                <input
-                  type="number"
-                  name="height_in_cm"
-                  value={this.state.height_in_cm}
-                  onChange={this.handleInputChange}
-                  required
-                />
+                <form onSubmit={handleDataSubmit}>
+                  <div>
+                    <label>Height (cm):</label>
+                    <input
+                        type="number"
+                        name="height_in_cm"
+                        value={formData.height_in_cm}
+                        onChange={handleInputChange}
+                        required
+                    />
+                  </div>
+                  <div>
+                    <label>Weight (lbs):</label>
+                    <input
+                        type="number"
+                        name="weight_in_kg"
+                        value={formData.weight_in_kg}
+                        onChange={handleInputChange}
+                        required
+                    />
+                  </div>
+                  <div>
+                    <label>Goal Weight:</label>
+                    <input
+                        type="number"
+                        name="goal_weight_in_kg"
+                        value={formData.goal_weight_in_kg}
+                        onChange={handleInputChange}
+                        required
+                    />
+                  </div>
+                  <div>
+                    <label>Age:</label>
+                    <input
+                        type="number"
+                        name="age"
+                        value={formData.age}
+                        onChange={handleInputChange}
+                        required
+                    />
+                  </div>
+                  {/* Add other input fields for weight, goal weight, age, and activity level here */}
+                  <button type="submit">Post Data</button>
+                </form>
               </div>
-              <div>
-                <label>Weight (lbs):</label>
-                <input
-                  type="number"
-                  name="weight_in_kg"
-                  value={this.state.weight_in_kg}
-                  onChange={this.handleInputChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>Goal Weight:</label>
-                <input
-                  type="number"
-                  name="goal_weight_in_kg"
-                  value={this.state.goal_weight_in_kg}
-                  onChange={this.handleInputChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>Age:</label>
-                <input
-                  type="number"
-                  name="age"
-                  value={this.state.age}
-                  onChange={this.handleInputChange}
-                  required
-                />
-              </div>
-              {/* Add other input fields for weight, goal weight, age, and activity level here */}
-              <button type="submit">Post Data</button>
-            </form>
-          </div>
-        ) : (
-          <form method="POST" onSubmit={this.handleLoginSubmit}>
-            <div>
-              <label>Username:</label>
-             <input
-             name= "username"
-             type="text"
-             value={this.state.username}
-             onChange={this.handleInputChange}
-             required
-             />
+          ) : (
+              <form method="POST" onSubmit={handleLoginSubmit}>
+                <div>
+                  <label>Username:</label>
+                  <input
+                      name= "username"
+                      type="text"
+                      value={formData.username}
+                      onChange={handleInputChange}
+                      required
+                  />
 
-            </div>
-            <div>
-              <label>Password:</label>
-              <input
-                type="password"
-                name="password"
-                value={this.state.password}
-                onChange={this.handleInputChange}
-                required
-              />
-            </div>
-            <button type="submit">Authenticate</button>
-          </form>
-        )}
-      </div>
+                </div>
+                <div>
+                  <label>Password:</label>
+                  <input
+                      type="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      required
+                  />
+                </div>
+                <button type="submit">Authenticate</button>
+              </form>
+          )}
+        </div>
+
+
     );
-  }
 }
 
 export default AccountCreationForm;

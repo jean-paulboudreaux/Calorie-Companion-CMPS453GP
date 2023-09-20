@@ -5,6 +5,8 @@ cffi==1.15.1
 Django==4.2.5
 django-cors-headers==4.2.0
 djangorestframework==3.14.0
+mysqlclient==2.2.0
 pycparser==2.21
+pyodbc==4.0.39
 pytz==2023.3.post1
 sqlparse==0.4.4

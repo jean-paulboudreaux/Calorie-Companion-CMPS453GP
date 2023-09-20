@@ -1,9 +1,13 @@
 // Login.js
 import React, { useState } from 'react';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
-function Login() {
+
+function Login(props) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -20,7 +24,12 @@ function Login() {
 
             if (response.status === 200) {
                 // Authentication successful, handle the response or redirect
+                props.handleLogin(true)
+                Cookies.set('username', username, { expires: 0.1 }); // Expires in 1 day
+                navigate('/my-account')
+
             } else {
+                navigate('/login')
                 // Authentication failed, handle the error
             }
         } catch (error) {
