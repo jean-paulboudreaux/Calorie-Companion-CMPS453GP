@@ -84,8 +84,12 @@ SILENCED_SYSTEM_CHECKS = ['auth.E003', 'auth.W004']
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'CalorieCompanion',  # Replace with your MySQL database name
+        'USER': 'admin',
+        'PASSWORD': 'password',
+        'HOST': 'database-1.c3al9bovxcmy.us-east-2.rds.amazonaws.com',
+        'PORT': '3306',  # MySQL port (default is 3306)
     }
 }
 
