@@ -22,7 +22,7 @@ class UserInfo(serializers.ModelSerializer):
         lookup_field = 'username'  # Set 'username' as the lookup field
 
         fields = ['user', 'height_in_cm', 'weight_in_kg', 'goal_weight_in_kg', 'age',
-                  'activity_level', 'user_id']
+                  'activity_level', 'gender', 'daily_calories', 'estimated_completion_date', 'user_id']
 
 
 class LookupFieldPKUserInfo(serializers.ModelSerializer):
@@ -31,28 +31,43 @@ class LookupFieldPKUserInfo(serializers.ModelSerializer):
         lookup_field = 'user_id'  # Set 'username' as the lookup field
 
         fields = ['height_in_cm', 'weight_in_kg', 'goal_weight_in_kg', 'age',
-                  'activity_level', 'user_id']
-
-
-class GetAllData(serializers.ModelSerializer):
-    user = InitializeUser()  # Nest the InitializeUser serializer inside UserInfo
-
-    class Meta:
-        model = UserHealthInfo
-        fields = ['user', 'height_in_cm', 'weight_in_kg', 'goal_weight_in_kg', 'age', 'activity_level']
+                  'activity_level', 'gender', 'daily_calories', 'estimated_completion_date', 'user_id']
 
 
 class CustomUserInfo(serializers.ModelSerializer):
     class Meta:
         model = UserHealthInfo
         fields = ['id', 'user_id', 'height_in_cm', 'weight_in_kg', 'goal_weight_in_kg', 'age',
-                  'activity_level']
+                  'activity_level', 'daily_calories', 'estimated_completion_date']
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
-    user = CustomUserModelFields()
-    userhealthinfo = CustomUserInfo()  # Embed UserHealthInfoSerializer
-
     class Meta:
         model = CustomUser
-        fields = ('user', 'userhealthinfo')
+        fields = ['id', 'username', 'password', 'last_login', 'is_superuser', 'is_active']
+
+
+class CustomUserInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserHealthInfo
+        fields = ['id', 'user_id', 'height_in_cm', 'weight_in_kg', 'goal_weight_in_kg', 'age', 'activity_level', 'gender','daily_calories', 'estimated_completion_date']
+
+
+class CombinedUserSerializer(serializers.Serializer):
+    user = CustomUserSerializer()
+    health_info = CustomUserInfoSerializer()  # Embed UserHealthInfoSerializer
+
+
+class MealSerializer(serializers.ModelSerializer):
+    class Meta:
+        user = CustomUserModelFields
+        model = Meal
+        fields = ['id', 'user', 'meal_number', 'date']
+
+
+class FoodItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        meal = MealSerializer()
+        model = FoodItem
+        fields = ['meal', 'name', 'calories', 'carbohydrates', 'protein', 'sodium', 'fiber', 'sat_fat', 'trans_fat',
+                  'total_fat']

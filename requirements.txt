@@ -10,3 +10,5 @@ pycparser==2.21
 pyodbc==4.0.39
 pytz==2023.3.post1
 sqlparse==0.4.4
+
+requests~=2.31.0

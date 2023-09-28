@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Cookies from "js-cookie";
+import {PersonOutline} from "react-ionicons";
 
 function NavLoggedOut(props){
     return(

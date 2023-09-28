@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import './Container.css'
 
 
 function Login(props) {
@@ -25,8 +26,8 @@ function Login(props) {
             if (response.status === 200) {
                 // Authentication successful, handle the response or redirect
                 props.handleLogin(true)
-                Cookies.set('username', username, { expires: 0.1 }); // Expires in 1 day
-                navigate('/my-account')
+                Cookies.set('username', username, { expires: 1 }); // Expires in 1 day
+                navigate('/dashboard')
 
             } else {
                 navigate('/login')
@@ -38,7 +39,7 @@ function Login(props) {
     };
 
     return (
-        <div>
+        <div className="center">
             <h2>Login</h2>
             <form onSubmit={handleSubmit}>
                 <div>

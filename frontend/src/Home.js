@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import MyAccount from "./MyAccount";
+import Dashboard from "./Dashboard";
 
 const HomePage = (props) => {
     const navigate = useNavigate();
@@ -14,7 +15,7 @@ const HomePage = (props) => {
         if (storedUsername) {
             // If the cookie is found, set the username state and redirect to "/my-account"
             setUsername(storedUsername);
-            navigate('/my-account');
+            navigate('/dashboard');
             setRedirect(<MyAccount username = {username} handleLogin = {props.handleLogin}/>)
         }
         else{
@@ -22,12 +23,6 @@ const HomePage = (props) => {
                 <div>
                     <h1>Welcome to the Home Page</h1>
                     <p>This is a mock home page.</p>
-                    <Link to="/create-account">
-                        <button>Create Account</button>
-                    </Link>
-                    <Link to="/login">
-                        <button>Login</button>
-                    </Link>
                 </div>
 
             )

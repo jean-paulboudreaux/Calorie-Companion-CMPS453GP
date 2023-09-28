@@ -1,0 +1,31 @@
+@import 'antd/dist/reset.css';
+
+.ant-menu-dark ,
+.ant-menu-dark .ant-menu-item-group-title,
+.ant-menu-dark .ant-menu-item > a,
+.ant-menu-dark .ant-menu-item > span > a {
+  height:  800px;
+  min-width: 60px;
+  max-width: 256px;
+  transition: height 0.5s; /* Increase the transition duration for a slower effect */
+  z-index: 100; /* Set a higher z-index to ensure it's above other content */
+  text-decoration: none;
+
+}
+.ant-menu-dark{
+  position: fixed;
+  background-color: #212529; /* Set your desired background color */
+  z-index: 100;
+  min-width: 60px;
+  max-width: 256px;
+  height: calc(100vh - 55px); /* Set the height to fill the remaining viewport height */
+
+}
+.ant-btn .ant-btn-primary{
+  background-color: #c1a467 ;
+}
+
+.ant-menu-dark .ant-menu-item-selected {
+  background-color: #c1a467;
+  color: #ffffff;
+}

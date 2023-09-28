@@ -1,12 +1,8 @@
 //      const response = await axios.post('http://127.0.0.1:8000/create-account/', data);
-import React, {Component, useState} from 'react';
+import React, {useState} from 'react';
 import axios from 'axios';
-import {Link} from "react-router-dom";
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import { redirect } from 'react-router-dom';
-import MyAccount from "./MyAccount";
+import {useNavigate} from "react-router-dom"; // Import useNavigate
 import Cookies from "js-cookie";
-
 
 
 function AccountCreationForm(props) {
@@ -19,17 +15,33 @@ function AccountCreationForm(props) {
     weight_in_kg: '',
     goal_weight_in_kg: '',
     age: '',
-    activity_level: 'Sedentary',
+    activity_level: '',
+    gender: '',
     successMessage: '',
     errorMessage: '',
     user_id: '',
+    height_in_feet:'',
+    height_in_inches: '',
   });
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
-
+  const handleActivityLevelChange = (e) => {
+    const newActivityLevel = e.target.value;
+    setFormData({
+      ...formData,
+      activity_level: newActivityLevel,
+    });
+  };
+  const handleGenderChange = (e) => {
+    const newGender = e.target.value;
+    setFormData({
+      ...formData,
+      gender: newGender,
+    });
+  };
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
 
@@ -78,20 +90,22 @@ function AccountCreationForm(props) {
       console.log('putting data...');
       console.log(formData);
 
+
       const response = await axios.put(url, {
         user: formData.username,
-        height_in_cm: formData.height_in_cm,
-        weight_in_kg: formData.weight_in_kg,
-        goal_weight_in_kg: formData.goal_weight_in_kg,
+        height_in_cm: feetToCm(formData.height_in_feet, formData.height_in_inches),
+        weight_in_kg: lbsToKg(formData.weight_in_kg),
+        goal_weight_in_kg: lbsToKg(formData.goal_weight_in_kg),
         age: formData.age,
         activity_level: formData.activity_level,
+        gender: formData.gender,
       });
 
       if (response.status === 200) {
         console.log('successfully updated data...');
         props.handleLogin(true)
-        Cookies.set('username', response.data.username, { expires: 0.1 }); // Expires in 1 day
-        navigate('/my-account')
+        Cookies.set('username', formData.username, { expires: 1 }); // Expires in 1 day
+        navigate('/dashboard')
       } else {
         // Handle other cases
       }
@@ -103,21 +117,48 @@ function AccountCreationForm(props) {
       });
     }
   };
-    return (
+
+  function handleFeetChange(e) {
+    setFormData({...formData, height_in_feet: e.target.value })
+  }
+
+  function handleInchesChange(e) {
+    setFormData({...formData, height_in_inches: e.target.value })
+  }
+  function feetToCm(feet, inches){
+    return (feet * 30.48) + ((inches / 12) * 30.48)
+  }
+  function lbsToKg(lbs){
+    return lbs * 0.453592
+  }
+  return (
         <div>
-          <h2>Authentication and Data Posting</h2>
+          <h2>Account Setup</h2>
           {formData.isAuthenticated ? (
               <div>
                 <form onSubmit={handleDataSubmit}>
                   <div>
-                    <label>Height (cm):</label>
-                    <input
-                        type="number"
-                        name="height_in_cm"
-                        value={formData.height_in_cm}
-                        onChange={handleInputChange}
-                        required
-                    />
+                    <label htmlFor="gender">Gender:</label>
+                    <select
+                        id="gender"
+                        name="gender"
+                        value={formData.gender}
+                        onChange={handleGenderChange}
+                    >
+                      <option value="">Select a gender</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label>
+                      Feet:
+                      <input type="number" value={formData.height_in_feet} onChange={handleFeetChange} />
+                    </label>
+                    <label>
+                      Inches:
+                      <input type="number" value={formData.height_in_inches} onChange={handleInchesChange} />
+                    </label>
                   </div>
                   <div>
                     <label>Weight (lbs):</label>
@@ -149,8 +190,24 @@ function AccountCreationForm(props) {
                         required
                     />
                   </div>
+                  <div>
+                    <label htmlFor="activity-level">Activity Level:</label>
+                    <select
+                        id="activity-level"
+                        name="activity-level"
+                        value={formData.activity_level}
+                        onChange={handleActivityLevelChange}
+                    >
+                      <option value="">Select an activity level</option>
+                      <option value="Sedentary">Sedentary</option>
+                      <option value="Lightly Active">Lightly Active</option>
+                      <option value="Moderately Active">Moderately Active</option>
+                      <option value="Very Active">Very Active</option>
+                      <option value="Extremely Active">Extremely Active</option>
+                    </select>
+                  </div>
                   {/* Add other input fields for weight, goal weight, age, and activity level here */}
-                  <button type="submit">Post Data</button>
+                  <button type="submit">Create Account</button>
                 </form>
               </div>
           ) : (
@@ -164,7 +221,6 @@ function AccountCreationForm(props) {
                       onChange={handleInputChange}
                       required
                   />
-
                 </div>
                 <div>
                   <label>Password:</label>
@@ -176,7 +232,7 @@ function AccountCreationForm(props) {
                       required
                   />
                 </div>
-                <button type="submit">Authenticate</button>
+                <button type="submit">Next</button>
               </form>
           )}
         </div>
