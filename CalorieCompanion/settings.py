@@ -54,7 +54,12 @@ REST_FRAMEWORK = {'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.All
 
 ROOT_URLCONF = 'CalorieCompanion.urls'
 
-CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Replace with your frontend's URL
+    # Add more allowed origins as needed
+]
+
 
 TEMPLATES = [
     {

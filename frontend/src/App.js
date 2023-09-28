@@ -1,4 +1,4 @@
-// App.js
+// {loggedIn ? <NavLoggedIn/> : <NavLoggedOut/>}
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './Home'; // Import your Home component
@@ -8,6 +8,14 @@ import MyAccount from './MyAccount';
 import Cookies from "js-cookie";
 import NavLoggedIn from "./Navigation/NavLoggedIn";
 import NavLoggedOut from "./Navigation/NavLoggedOut"; // Import your MyAccount component
+import './App.css'
+import SideDrawer from "./Navigation/SideDrawer";
+import Dashboard from "./Dashboard";
+import FoodEntries from "./FoodEntries";
+import ExerciseEntries from "./ExerciseEntries";
+import Goals from "./Goals";
+import Help from "./Help";
+import Settings from "./Settings";
 
 
 function App() {
@@ -19,21 +27,44 @@ function App() {
     const handleLogin = (status) => {
         setLoggedIn(status)
     };
-    console.log(loggedIn)
 
     return (
         <Router>
             <div>
-                {loggedIn ? <NavLoggedIn/> : <NavLoggedOut/>}
-                <Routes>
-                    <Route path="/" element={<Home handleLogin={handleLogin} loggedIn={loggedIn} />} />
-                    <Route path="/login" element={<Login handleLogin={handleLogin} loggedIn={loggedIn} />} />
-                    <Route path="/create-account" element={<AccountCreationForm handleLogin={handleLogin} />} />
-                    <Route
-                        path="/my-account"
-                        element={loggedIn ? <MyAccount handleLogin={handleLogin} /> : <Home handleLogin={handleLogin} loggedIn={loggedIn} />}
-                    />
-                </Routes>
+                <div>
+                    <h1 className="App-Name">Calorie Companion</h1>
+                </div>
+                {loggedIn ? <NavLoggedIn handleLogin={handleLogin} /> : <NavLoggedOut handleLogin={handleLogin}/>}
+                {loggedIn && <SideDrawer/>}
+                <div className='center'>
+                    <Routes>
+                        <Route path="/" element={<Home handleLogin={handleLogin} loggedIn={loggedIn} />} />
+                        <Route path="/login" element={<Login handleLogin={handleLogin} loggedIn={loggedIn} />} />
+                        <Route path="/create-account" element={<AccountCreationForm handleLogin={handleLogin} />} />
+                        <Route path="/dashboard"
+                               element={loggedIn ? <MyAccount handleLogin={handleLogin} /> : <Home handleLogin={handleLogin} loggedIn={loggedIn} />}
+                               />
+                        <Route path="/food-entries"
+                               element={loggedIn ? <FoodEntries handleLogin={handleLogin} /> : <Home handleLogin={handleLogin} loggedIn={loggedIn} />}
+                        />
+                        <Route path="/exercise-entries"
+                               element={loggedIn ? <ExerciseEntries handleLogin={handleLogin} /> : <Home handleLogin={handleLogin} loggedIn={loggedIn} />}
+                        />
+                        <Route path="/goals"
+                               element={loggedIn ? <Goals handleLogin={handleLogin} /> : <Home handleLogin={handleLogin} loggedIn={loggedIn} />}
+                        />
+                        <Route path="/help"
+                               element={loggedIn ? <Help handleLogin={handleLogin} /> : <Home handleLogin={handleLogin} loggedIn={loggedIn} />}
+                        />
+                        <Route path="/settings"
+                               element={loggedIn ? <Settings handleLogin={handleLogin} /> : <Home handleLogin={handleLogin} loggedIn={loggedIn} />}
+                        />
+
+
+                    </Routes>
+                </div>
+
+
             </div>
 
         </Router>

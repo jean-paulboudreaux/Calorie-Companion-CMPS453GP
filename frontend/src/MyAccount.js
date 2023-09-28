@@ -22,16 +22,21 @@ const MyAccount = (props) => {
             "weight_in_kg": null,
             "goal_weight_in_kg": null,
             "age": null,
-            "activity_level": null
+            "activity_level": null,
+            "gender": null,
+            "daily_calories": null,
+            "estimated_completion_date": null,
         }
     })
 
     useEffect(() => {
         const username = Cookies.get('username')
+        console.log(username)
         try{
             axios.get("http://127.0.0.1:8001/" + username + "/").then(
                 (response)=>{
                     setUserInfo(response.data)
+                    console.log(response.data)
             }
             )
 
@@ -55,8 +60,7 @@ const MyAccount = (props) => {
 
     return (
         <div>
-            <h1>Welcome to your account, {userInfo.user.username}</h1>
-            <button onClick={handleLogout}>Logout</button>
+            <h1>Welcome to your dashboard, {userInfo.user.username}</h1>
         </div>
     );
 };
