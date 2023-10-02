@@ -53,6 +53,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             return None
 
 
+class AuthToken(models.Model):
+    token = models.TextField()
+    expiration_date = models.DateTimeField()
+
 class UserHealthInfo(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)  # Associate the health info with a user
 

@@ -19,16 +19,10 @@ const FoodEntries = () => {
         const apiUrl = 'http://localhost:8001/api/search';
 
         // Request data sent to the server
-
-        const requestData = {
-            method: 'foods.search',
-            search_expression: food,
-            format: 'json',
-        };
         axios
             .post(apiUrl, {
                 body: {
-                    method: 'foods.search',
+                    method: 'foods.search.v2',
                     search_expression: food,
                     format: 'json',
                 }

@@ -19,10 +19,11 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.hashers import check_password
 from .CalorieCalculatorAlgo import CalorieCalculatorAlgo
 import requests
+from django.utils import timezone
+
+
 
 # Create your views here.
-
-
 @api_view(['POST'])
 def login_view(request):
     if request.method == 'POST':
@@ -103,17 +104,41 @@ class UserView(APIView):
         username = request.data.get('username', '')  # Default to an empty string if 'username' is not in request.data
         password = request.data.get('password', '')  # Default to an empty string if 'password' is not in request.data
         # Create a user instance
-        userAccount = CustomUser(username=username)
 
-        # Use make_password to hash the password
-        userAccount.password = make_password(password)
 
-        user_health_initialization = UserHealthInfo(user=userAccount)
+        # userAccount = CustomUser(username=username)
+        #
+        # # Use make_password to hash the password
+        # userAccount.password = make_password(password)
+        #
+        # user_health_initialization = UserHealthInfo(user=userAccount)
+        #
+        # # Save the user
+        # userAccount.save()
+        # user_health_initialization.save()
+        # return Response({"username": username, "password": userAccount.password})
 
-        # Save the user
-        userAccount.save()
-        user_health_initialization.save()
-        return Response({"username": username, "password": userAccount.password})
+        # Check if a user with the provided username already exists
+        existing_user = CustomUser.objects.filter(username=username).first()
+
+        if existing_user:
+            # User already exists, return user information
+            return Response(
+                {"message": "User already exists"} ,status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        else:
+            # User doesn't exist, create a new user
+            userAccount = CustomUser(username=username)
+            # Use make_password to hash the password
+            userAccount.password = make_password(password)
+
+            user_health_initialization = UserHealthInfo(user=userAccount)
+
+            # Save the user
+            userAccount.save()
+            user_health_initialization.save()
+
+            return Response({"message": "User created", "username": username, "password": userAccount.password},
+                            status=status.HTTP_200_OK)
 
 
 class UserHealthInfoList(APIView):
@@ -328,24 +353,38 @@ class GenerateAPIToken(APIView):
         headers = {'content-type': 'application/x-www-form-urlencoded'}
         data = {
             'grant_type': 'client_credentials',
-            'scope': 'basic'
+            'scope': 'premier'
         }
 
         response = requests.post(url, auth=auth, headers=headers, data=data)
 
+        existing_token = AuthToken.objects.first()
+
         if response.status_code == 200:
             response_data = response.json()
+            data = response.json()
+            new_token = data.get('access_token')
+            expiration_date = timezone.now() + timezone.timedelta(days=1)  # Generate token daily
+
+            if existing_token:
+                # Update the existing token
+                existing_token.token = new_token
+                existing_token.expiration_date = expiration_date
+                existing_token.save()
+            else:
+                # Create a new token if none exists
+                AuthToken.objects.create(token=new_token, expiration_date=expiration_date)
+
             return Response(response_data)
         else:
             return Response({'error': 'Failed to obtain token'}, status=status.HTTP_400_BAD_REQUEST)
 
+
 @csrf_exempt  # Add this decorator to allow POST requests from your frontend
 def get_food_macros(request):
-
-
     if request.method == 'POST':
         # Obtain the access token from FatSecret (assuming you already have code for this)
-        access_token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjVGQUQ4RTE5MjMwOURFRUJCNzBCMzU5M0E2MDU3OUFEMUM5NjgzNDkiLCJ0eXAiOiJhdCtqd3QiLCJ4NXQiOiJYNjJPR1NNSjN1dTNDeldUcGdWNXJSeVdnMGsifQ.eyJuYmYiOjE2OTU4NDcxNzcsImV4cCI6MTY5NTkzMzU3NywiaXNzIjoiaHR0cHM6Ly9vYXV0aC5mYXRzZWNyZXQuY29tIiwiYXVkIjoiYmFzaWMiLCJjbGllbnRfaWQiOiI5N2UwYzhmN2NhOTk0ZWMzOWEyYzNkYmQzODNjNjlkZSIsInNjb3BlIjpbImJhc2ljIl19.LdMhCndYDjTT_Jq-zduhgbvhe15gt9Y8b_6qRvKSvxWPO6KOA0WMw5XSjdZnKWJjnuZaNoYoEujKbYwhY5R9MP8jzT-lXoViAFk4yfUiJRHkAlxnMJHvDsNmMFlus4LTXBL1TDE_oCDwEIuKB84r3nPL3DVAbZAo2FqrPJxmSQdxCq7zekQoOv38EQTzxTSavCc6ZSJPgkzMBxSruUy72xN2OE7EPMHP-YHaTvkw3zvkNPXq8XdVmpa7vB4g834XfVcGO4cPuNcup-6gOQl_jDvyr8yTB-V-sD5NitZCup5ZxArzlFkEt6vL0IxyQxpnFzWxP8Agzf4tuel_Jq4BzA'  # Implement your token retrieval logic here
+        access_token = AuthToken.objects.first()
 
         if access_token:
             # Get the food item from the request
@@ -354,17 +393,18 @@ def get_food_macros(request):
             method = body_data.get('method')
             search_expression = body_data.get('search_expression')
             format = body_data.get('format')
+            token_value = access_token.token
 
             # Prepare the API request to get macros
             api_url = 'https://platform.fatsecret.com/rest/server.api'
             params = {
-                'method': 'foods.search',
+                'method': method,
                 'search_expression': search_expression,  # Replace with the appropriate food_id from FatSecret
-                'format': 'json',
+                'format': format,
             }
 
             headers = {
-                'Authorization': f'Bearer {access_token}',
+                'Authorization': f'Bearer {token_value}',
             }
 
             # Make the API request
@@ -372,7 +412,7 @@ def get_food_macros(request):
             if response.status_code == 200:
                 data = response.json()
                 # Extract and return the macro information from the response
-                #macros = data.get('food', {}).get('servings', [])[0].get('nutritional_info', {})
+                # macros = data.get('food', {}).get('servings', [])[0].get('nutritional_info', {})
                 return JsonResponse(data)
             else:
                 return JsonResponse({'error': 'Failed to retrieve food data'}, status=500)
