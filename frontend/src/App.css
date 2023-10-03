@@ -10,12 +10,19 @@
   height: 40vmin;
   pointer-events: none;
 }
-.center {
-  border: 5px solid;
-  margin: auto;
-  width: 50%;
-  padding: 10px;
+.wrapper {
+  border: 2px solid;
+  margin-top: 50px;
+  width: 80%;
+  overflow-x: auto; /* Add this line to enable horizontal scrollbar */
 }
+table {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+
 
 .App-Name{
   margin-left: 550px;
@@ -25,6 +32,9 @@
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
+}
+.app-container {
+  display: flex; /* Use flexbox to create a sidebar and main content layout */
 }
 
 .App-header {

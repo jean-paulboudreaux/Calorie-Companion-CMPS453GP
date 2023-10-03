@@ -52,27 +52,28 @@ function SideDrawer() {
 
     return (
         <div>
+                <Menu
+                    defaultSelectedKeys={['1']}
+                    defaultOpenKeys={['sub1']}
+                    mode="inline"
+                    theme="dark"
+                    inlineCollapsed={collapsed}
+                >
+                    <Button type="primary"  onClick={toggleCollapsed} style={{ marginBottom: 16, backgroundColor: "#c1a467" }}>
+                        {collapsed ? <MenuOutlined  /> : <MenuOutlined />}
+                    </Button>
 
-            <Menu
-                defaultSelectedKeys={['1']}
-                defaultOpenKeys={['sub1']}
-                mode="inline"
-                theme="dark"
-                inlineCollapsed={collapsed}
-            >
-                <Button type="primary"  onClick={toggleCollapsed} style={{ marginBottom: 16, backgroundColor: "#c1a467" }}>
-                    {collapsed ? <MenuOutlined  /> : <MenuOutlined />}
-                </Button>
+
+                    {items.map((item) => (
+                        <Menu.Item key={item.key} icon={item.icon}>
+                            <Link to={`/${item.label.toLowerCase().replace(' ', '-')}`}>
+                                {item.label}
+                            </Link>
+                        </Menu.Item>
+                    ))}
+                </Menu>
 
 
-                {items.map((item) => (
-                    <Menu.Item key={item.key} icon={item.icon}>
-                        <Link to={`/${item.label.toLowerCase().replace(' ', '-')}`}>
-                            {item.label}
-                        </Link>
-                    </Menu.Item>
-                ))}
-            </Menu>
     {/* Define your routes here */}
     <Switch>
         {items.map((item) => (

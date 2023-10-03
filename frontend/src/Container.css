@@ -1,6 +1,16 @@
-.center {
+.wrapper {
     border: 5px solid;
     margin: auto;
+    margin-top: 50px;
     width: 50%;
-    padding: 10px;
+}
+
+.inner-table {
+    width: 100%;
+    box-sizing: border-box; /* Include padding and border in the width */
+    background-color: #bbbbbb; /* Add any other styles you want for the inner div */
+}
+
+.alternate-row {
+    background-color: #c8b174; /* Set the background color for alternate rows */
 }

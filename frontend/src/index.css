@@ -26,6 +26,21 @@ body {
   }
 }
 
+table {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  height: 400px; /* Adjust the height as needed */
+
+}
+
+td {
+  word-wrap: break-word;
+}
+tr {
+  height: 50px; /* Adjust the height as needed */
+}
+
 /* Sidebar */
 .sidebar {
   position: fixed;
