@@ -39,7 +39,7 @@ function Login(props) {
     };
 
     return (
-        <div className="center">
+        <div>
             <h2>Login</h2>
             <form onSubmit={handleSubmit}>
                 <div>

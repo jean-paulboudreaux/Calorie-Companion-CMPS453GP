@@ -250,6 +250,7 @@ class MealCreateView(APIView):
     queryset = Meal.objects.all()
 
     def post(self, request):
+        print(request.data)
         serializer = MealSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -328,7 +329,7 @@ class GenerateAPIToken(APIView):
         headers = {'content-type': 'application/x-www-form-urlencoded'}
         data = {
             'grant_type': 'client_credentials',
-            'scope': 'basic'
+            'scope': 'premier'
         }
 
         response = requests.post(url, auth=auth, headers=headers, data=data)
@@ -345,7 +346,7 @@ def get_food_macros(request):
 
     if request.method == 'POST':
         # Obtain the access token from FatSecret (assuming you already have code for this)
-        access_token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjVGQUQ4RTE5MjMwOURFRUJCNzBCMzU5M0E2MDU3OUFEMUM5NjgzNDkiLCJ0eXAiOiJhdCtqd3QiLCJ4NXQiOiJYNjJPR1NNSjN1dTNDeldUcGdWNXJSeVdnMGsifQ.eyJuYmYiOjE2OTU4NDcxNzcsImV4cCI6MTY5NTkzMzU3NywiaXNzIjoiaHR0cHM6Ly9vYXV0aC5mYXRzZWNyZXQuY29tIiwiYXVkIjoiYmFzaWMiLCJjbGllbnRfaWQiOiI5N2UwYzhmN2NhOTk0ZWMzOWEyYzNkYmQzODNjNjlkZSIsInNjb3BlIjpbImJhc2ljIl19.LdMhCndYDjTT_Jq-zduhgbvhe15gt9Y8b_6qRvKSvxWPO6KOA0WMw5XSjdZnKWJjnuZaNoYoEujKbYwhY5R9MP8jzT-lXoViAFk4yfUiJRHkAlxnMJHvDsNmMFlus4LTXBL1TDE_oCDwEIuKB84r3nPL3DVAbZAo2FqrPJxmSQdxCq7zekQoOv38EQTzxTSavCc6ZSJPgkzMBxSruUy72xN2OE7EPMHP-YHaTvkw3zvkNPXq8XdVmpa7vB4g834XfVcGO4cPuNcup-6gOQl_jDvyr8yTB-V-sD5NitZCup5ZxArzlFkEt6vL0IxyQxpnFzWxP8Agzf4tuel_Jq4BzA'  # Implement your token retrieval logic here
+        access_token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjVGQUQ4RTE5MjMwOURFRUJCNzBCMzU5M0E2MDU3OUFEMUM5NjgzNDkiLCJ0eXAiOiJhdCtqd3QiLCJ4NXQiOiJYNjJPR1NNSjN1dTNDeldUcGdWNXJSeVdnMGsifQ.eyJuYmYiOjE2OTYyNzYzOTEsImV4cCI6MTY5NjM2Mjc5MSwiaXNzIjoiaHR0cHM6Ly9vYXV0aC5mYXRzZWNyZXQuY29tIiwiYXVkIjoicHJlbWllciIsImNsaWVudF9pZCI6Ijk3ZTBjOGY3Y2E5OTRlYzM5YTJjM2RiZDM4M2M2OWRlIiwic2NvcGUiOlsicHJlbWllciJdfQ.Y2AIskjMcj09lGnd_jbZ1xXdt_dJQqlRJyCSKlFM_xY5_LQasuy_SDgKKV-fDa-22RODd2xtdL_IsixNp1wjCbB4XTLaBQrWYaKg5ahlT9SDr-pzzb_gjMLUvSkM9tNTTo3McRp8FWe4m1yswBbl9XIT6yIEEapFZllsjNOeYqASMC_8-VVD7xLB9hCfmpbc_x3rOlqIRgSdn_wE4Cg3bI2ESK6BrOrD0tJWU6BStGYIAGBIZl5vGOyRwvxMQEVKShqAVbkooy1ZnNIPcWg3mivu3xBCYHOu6ACFU1V-erW_H8_du8rN509cmGHeZBtAcytLUd1vDgSzdoGcg9D6VA'
 
         if access_token:
             # Get the food item from the request
@@ -358,7 +359,7 @@ def get_food_macros(request):
             # Prepare the API request to get macros
             api_url = 'https://platform.fatsecret.com/rest/server.api'
             params = {
-                'method': 'foods.search',
+                'method': 'foods.search.v2',
                 'search_expression': search_expression,  # Replace with the appropriate food_id from FatSecret
                 'format': 'json',
             }

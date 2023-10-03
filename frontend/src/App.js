@@ -35,8 +35,12 @@ function App() {
                     <h1 className="App-Name">Calorie Companion</h1>
                 </div>
                 {loggedIn ? <NavLoggedIn handleLogin={handleLogin} /> : <NavLoggedOut handleLogin={handleLogin}/>}
-                {loggedIn && <SideDrawer/>}
-                <div className='center'>
+
+                {loggedIn ? (
+                    <div className="app-container">
+                        <SideDrawer />
+                        <div className='wrapper'>
+
                     <Routes>
                         <Route path="/" element={<Home handleLogin={handleLogin} loggedIn={loggedIn} />} />
                         <Route path="/login" element={<Login handleLogin={handleLogin} loggedIn={loggedIn} />} />
@@ -62,13 +66,20 @@ function App() {
 
 
                     </Routes>
-                </div>
-
-
+                        </div>
+                    </div>
+                ) : (
+                    <Routes>
+                        <Route path="/" element={<Home handleLogin={handleLogin} loggedIn={loggedIn} />} />
+                        <Route path="/login" element={<Login handleLogin={handleLogin} loggedIn={loggedIn} />} />
+                        <Route path="/create-account" element={<AccountCreationForm handleLogin={handleLogin} />} />
+                        {/* Your routes for when not logged in */}
+                    </Routes>
+                )}
             </div>
-
         </Router>
     );
 }
+
 
 export default App;

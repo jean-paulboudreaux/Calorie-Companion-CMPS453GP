@@ -27,17 +27,12 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', login_view, name='login'),
     path('external-api/', GenerateAPIToken.as_view(), name='token'),
+    path('add-meal/', MealCreateView.as_view()),
     path('create-account/', UserView.as_view(), name="create-account"),
     path('<str:username>/', UserHealthInfoView.as_view(), name='get_user_data'),
     path('post-user-details/', PostUserHealthInfo.as_view(), name="post" ),
+    path('add-meal/add-food/', FoodItemCreateView.as_view()),
     path('update-user-details/<int:user_id>/', UpdateUserInfo.as_view(), name='update'),
     path('all-users/', UserHealthInfoList.as_view(), name="all-users"),
     path('api/search', get_food_macros, name='search-food'),
-    path('add-meal/', MealCreateView.as_view()),
-    path('add-food/', FoodItemCreateView.as_view()),
 ]
-urlpatterns += [
-    path('favicon.ico', lambda request: HttpResponseNotFound()),
-]
-
-

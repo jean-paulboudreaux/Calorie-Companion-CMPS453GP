@@ -13,7 +13,6 @@
 
 }
 .ant-menu-dark{
-  position: fixed;
   background-color: #212529; /* Set your desired background color */
   z-index: 100;
   min-width: 60px;
@@ -25,7 +24,47 @@
   background-color: #c1a467 ;
 }
 
+.column-header {
+  border-right: 2px solid black;
+}
+
+/* Remove the right border from the last column header */
+.column-header:last-child {
+  border-right: none;
+}
+
 .ant-menu-dark .ant-menu-item-selected {
   background-color: #c1a467;
   color: #ffffff;
+}
+/* Apply styles to the parent container */
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+/* Sidebar styles */
+.sidebar {
+  width: 256px; /* Set your desired sidebar width */
+  transition: width 0.3s ease-in-out; /* Add a smooth transition effect */
+  background-color: #212529; /* Set your desired background color */
+  color: white; /* Set text color */
+  padding: 16px; /* Add padding as needed */
+  overflow-y: auto; /* Add scrollbar if content overflows */
+}
+
+/* Main content styles */
+.main-content {
+  flex-grow: 1; /* Allow content to grow and fill available space */
+  padding: 16px; /* Add padding as needed */
+  overflow-y: auto; /* Add scrollbar if content overflows */
+}
+
+/* Collapse sidebar styles */
+.container.collapsed .sidebar {
+  width: 60px; /* Set the width of the collapsed sidebar */
+}
+
+.container.collapsed .main-content {
+  margin-left: 60px; /* Adjust the margin to make space for the collapsed sidebar */
 }
