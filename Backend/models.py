@@ -9,7 +9,6 @@ from django.db import models
 
 
 class CustomUserManager(BaseUserManager):
-    from django.contrib.auth.hashers import make_password
 
     def create_user(self, username, password=None, **extra_fields):
         if not username:
